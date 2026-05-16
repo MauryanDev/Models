@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LanderUP-Modelo Sneakers - Tênis Exclusivos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap');
+
+        * {
+            font-family: 'Sora', sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6, .font-bold {
+            font-family: 'Space Mono', monospace;
+        }
+
+        .announcement-bar {
+            animation: scroll-text 25s linear infinite;
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+        }
+
+        @keyframes scroll-text {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 40;
+            animation: fadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(60px) scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .size-btn {
+            border: 2px solid #e0e0e0;
+            background-color: #f8f8f8;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-weight: 600;
+        }
+
+        .size-btn:hover {
+            border-color: #000;
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .size-btn.active {
+            background-color: #000;
+            color: #fff;
+            border-color: #000;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-card {
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.08);
+        }
+
+        .btn-primary {
+            background-color: #000;
+            color: #fff;
+            border: 2px solid #000;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary:hover {
+            background-color: #fff;
+            color: #000;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .filter-input {
+            border: 1px solid #e0e0e0;
+            outline: none;
+            background-color: #fafafa;
+            transition: all 0.3s ease;
+        }
+
+        .filter-input:focus {
+            border-color: #000;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .price-range {
+            width: 100%;
+            accent-color: #000;
+        }
+
+        header {
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .product-image {
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .brand-tag {
+            font-size: 0.7rem;
+            letter-spacing: 1.2px;
+            color: #666;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-white text-black">
+
+    <!-- ANNOUNCEMENT BAR -->
+    <div class="bg-black text-white py-2 overflow-hidden">
+        <p class="announcement-bar text-sm font-bold whitespace-nowrap">
+            🎁 Frete grátis para todo o país • 🎁 Frete grátis para todo o país • 🎁 Frete grátis para todo o país
+        </p>
+    </div>
+
+    <!-- HEADER -->
+    <header class="border-b-2 border-black bg-white sticky top-0 z-30">
+        <div class="container mx-auto px-4 py-6 flex items-center justify-between">
+            <!-- Menu Hambúrguer -->
+            <button class="lg:hidden hover:opacity-70 transition" id="menu-toggle">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+
+            <!-- Logo Centralizado -->
+            <div class="text-center flex-1 lg:flex-none">
+                <h1 class="text-4xl font-bold tracking-widest">LanderUP-Modelo</h1>
+                <p class="text-xs tracking-widest text-gray-600 font-medium">PREMIUM SNEAKERS</p>
+            </div>
+
+            <!-- Icons Direita -->
+            <div class="flex gap-6 lg:gap-8">
+                <button id="search-toggle" class="hover:opacity-70 transition transform hover:scale-110">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </button>
+                <button id="cart-toggle" class="relative hover:opacity-70 transition transform hover:scale-110">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Bar (Hidden by default) -->
+        <div id="search-bar" class="hidden border-t border-gray-100 py-4 bg-gray-50">
+            <input type="text" id="search-input" placeholder="Buscar tênis por marca ou modelo..." class="w-full px-4 py-3 filter-input focus:outline-none">
+        </div>
+    </header>
+
+    <!-- CART DRAWER -->
+    <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full md:w-96 bg-white z-50 transform translate-x-full transition-transform duration-300 shadow-2xl flex flex-col border-l-2 border-gray-200">
+        <!-- Header do Carrinho -->
+        <div class="border-b border-gray-200 p-6 flex items-center justify-between sticky top-0 bg-white">
+            <h2 class="text-2xl font-bold uppercase tracking-widest">Carrinho</h2>
+            <button id="cart-close" class="bg-black text-white w-8 h-8 flex items-center justify-center rounded-none hover:bg-gray-800 transition">
+                ✕
+            </button>
+        </div>
+
+        <!-- Items do Carrinho -->
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-6">
+            <!-- Items serão inseridos aqui -->
+            <div id="empty-cart" class="flex flex-col items-center justify-center h-full text-center">
+                <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                <p class="text-gray-500 text-lg font-semibold">Seu carrinho está vazio</p>
+                <p class="text-gray-400 text-sm mt-2">Adicione tênis para começar!</p>
+            </div>
+        </div>
+
+        <!-- Footer do Carrinho -->
+        <div class="border-t border-gray-200 p-6 bg-gray-50">
+            <div class="mb-6 pb-6 border-b-2 border-gray-200">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-gray-600">Subtotal:</span>
+                    <span class="font-bold">R$ <span id="cart-subtotal">0</span></span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Frete:</span>
+                    <span class="font-bold text-green-600">Grátis</span>
+                </div>
+            </div>
+            <div class="flex justify-between items-center mb-6 text-lg">
+                <span class="font-bold">Total:</span>
+                <span class="font-bold text-xl">R$ <span id="cart-total">0</span></span>
+            </div>
+            <button id="checkout-btn" class="w-full bg-black text-white py-3 font-bold uppercase tracking-widest rounded-none hover:bg-gray-800 transition transform hover:scale-105">
+                Finalizar Compra
+            </button>
+            <button id="continue-shopping" class="w-full border-2 border-black text-black py-3 font-bold uppercase tracking-widest rounded-none mt-3 hover:bg-black hover:text-white transition">
+                Continuar Comprando
+            </button>
+        </div>
+    </div>
+
+    <!-- CART OVERLAY -->
+    <div id="cart-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300"></div>
+
+    <!-- Main Content -->
+    <div class="flex">
+        <!-- Sidebar (Esquerda - 25%): Uma área de filtros visível -->
+        <aside id="sidebar" class="hidden lg:block w-1/4 border-r border-gray-100 p-8 max-h-screen overflow-y-auto sticky top-20 bg-gray-50">
+            <h2 class="text-xl font-bold mb-8 uppercase tracking-widest">Filtros</h2>
+
+            <!-- Marca -->
+            <div class="mb-8 pb-8 border-b border-gray-200">
+                <h3 class="font-bold uppercase text-sm tracking-widest mb-4 text-gray-900">Marca</h3>
+                <div class="space-y-3">
+                    <label class="flex items-center cursor-pointer group">
+                        <input type="checkbox" class="brand-filter mr-3 w-4 h-4 border-2 border-gray-300 rounded" value="nike" style="accent-color: #000;">
+                        <span class="text-sm text-gray-700 group-hover:text-black transition">Nike</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer group">
+                        <input type="checkbox" class="brand-filter mr-3 w-4 h-4 border-2 border-gray-300 rounded" value="adidas" style="accent-color: #000;">
+                        <span class="text-sm text-gray-700 group-hover:text-black transition">Adidas</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer group">
+                        <input type="checkbox" class="brand-filter mr-3 w-4 h-4 border-2 border-gray-300 rounded" value="jordan" style="accent-color: #000;">
+                        <span class="text-sm text-gray-700 group-hover:text-black transition">Jordan</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Tamanho -->
+            <div class="mb-8 pb-8 border-b border-gray-200">
+                <h3 class="font-bold uppercase text-sm tracking-widest mb-4 text-gray-900">Tamanho</h3>
+                <div class="grid grid-cols-3 gap-2">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" class="size-filter mr-2" value="38" style="accent-color: #000;">
+                        <span class="text-sm text-gray-700">38</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" class="size-filter mr-2" value="39" style="accent-color: #000;">
+                        <span class="text-sm text-gray-700">39</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" class="size-filter mr-2" value="40" style="accent-color: #000;">
+                        <span class="text-sm text-gray-700">40</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" class="size-filter mr-2" value="41" style="accent-color: #000;">
+                        <span class="text-sm text-gray-700">41</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" class="size-filter mr-2" value="42" style="accent-color: #000;">
+                        <span class="text-sm text-gray-700">42</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" class="size-filter mr-2" value="43" style="accent-color: #000;">
+                        <span class="text-sm text-gray-700">43</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Preço -->
+            <div class="mb-8">
+                <h3 class="font-bold uppercase text-sm tracking-widest mb-4 text-gray-900">Preço</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs text-gray-600 mb-2 block font-semibold">Mínimo: R$ <span id="min-price-display" class="font-bold text-black">0</span></label>
+                        <input type="range" id="min-price" class="price-range" min="0" max="5000" value="0">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-600 mb-2 block font-semibold">Máximo: R$ <span id="max-price-display" class="font-bold text-black">5000</span></label>
+                        <input type="range" id="max-price" class="price-range" min="0" max="5000" value="5000">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão Limpar Filtros -->
+            <button id="clear-filters" class="w-full btn-primary py-3 px-4 font-bold uppercase text-sm tracking-widest rounded-none">
+                Limpar Filtros
+            </button>
+        </aside>
+
+        <!-- GRID DE PRODUTOS -->
+        <main class="w-full lg:w-3/4 p-6 lg:p-12 bg-white">
+            <h2 class="text-2xl font-bold mb-8 uppercase tracking-widest">Coleção Exclusiva</h2>
+            <div id="products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+                <!-- Produtos serão inseridos aqui via JavaScript -->
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL QUICK VIEW -->
+    <div id="modal-overlay" class="modal-overlay items-center justify-center p-4">
+        <div class="modal-content bg-white w-full max-w-4xl rounded-none flex flex-col md:flex-row shadow-2xl max-h-[90vh] overflow-y-auto">
+            <!-- Close Button -->
+            <button id="modal-close" class="absolute top-6 right-6 bg-black text-white w-10 h-10 flex items-center justify-center rounded-none font-bold z-50 hover:bg-gray-800 transition hover:scale-110 transform">
+                ✕
+            </button>
+
+            <!-- Imagem do Produto -->
+            <div class="w-full md:w-1/2 bg-gray-50 flex items-center justify-center p-8 md:p-12 min-h-96">
+                <img id="modal-product-image" src="" alt="Produto" class="max-w-full max-h-96 object-contain">
+            </div>
+
+            <!-- Informações do Produto -->
+            <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between">
+                <div>
+                    <p id="modal-product-brand" class="brand-tag mb-3">BRAND</p>
+                    <h2 id="modal-product-name" class="text-3xl font-bold mb-4 uppercase tracking-wider leading-tight">Nome do Produto</h2>
+                    <p id="modal-product-description" class="text-base text-gray-600 mb-8 leading-relaxed">Descrição do produto</p>
+
+                    <div class="mb-8 pb-8 border-b-2 border-gray-200">
+                        <p class="text-2xl font-bold">R$ <span id="modal-product-price">0</span></p>
+                    </div>
+
+                    <!-- Seleção de Tamanho -->
+                    <div class="mb-8">
+                        <h3 class="font-bold uppercase text-sm tracking-widest mb-4">Escolha o Tamanho</h3>
+                        <div id="modal-sizes" class="grid grid-cols-4 gap-3">
+                            <!-- Tamanhos serão inseridos aqui -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botão Add to Cart -->
+                <button id="add-to-cart-btn" class="w-full btn-primary py-4 font-bold uppercase tracking-widest text-lg rounded-none">
+                    Adicionar ao Carrinho
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="border-t-2 border-gray-200 bg-black text-white py-12 mt-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-12 mb-12">
+                <div>
+                    <h4 class="font-bold uppercase text-sm tracking-widest mb-6">Suporte</h4>
+                    <ul class="space-y-3 text-sm text-gray-300">
+                        <li><a href="#" class="hover:text-white transition duration-300">FAQ</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-300">Contato</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-300">Rastreador</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold uppercase text-sm tracking-widest mb-6">Políticas</h4>
+                    <ul class="space-y-3 text-sm text-gray-300">
+                        <li><a href="#" class="hover:text-white transition duration-300">Devoluções</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-300">Privacidade</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-300">Termos</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold uppercase text-sm tracking-widest mb-6">Sobre</h4>
+                    <ul class="space-y-3 text-sm text-gray-300">
+                        <li><a href="#" class="hover:text-white transition duration-300">Quem Somos</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-300">Blog</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-300">Carreiras</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
+                <p>&copy; 2026 LanderUP-Modelo Sneakers. Todos os direitos reservados.</p>
+                <p class="mt-2 text-xs">Qualidade Premium • Entrega Rápida • Satisfação Garantida</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DATABASE DE PRODUTOS
+        const products = [
+            {
+                id: 1,
+                brand: 'Nike',
+                name: 'Air Jordan 1 Retro High',
+                price: 1899,
+                sizes: [38, 39, 40, 41, 42, 43],
+                image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8fHxzbmVha2Vyc3x8fDB8fHx8fA%3D%3D',
+                description: 'Ícone do streetwear. Silhueta clássica com detalhes em leather premium.'
+            },
+            {
+                id: 2,
+                brand: 'Adidas',
+                name: 'Ultraboost 22',
+                price: 1599,
+                sizes: [38, 39, 40, 41, 42, 43],
+                image: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8fHxzbmVha2Vyc3x8fDB8fHx8fA%3D%3D',
+                description: 'Tecnologia Boost de máxima conforto. Design minimalista e elegante.'
+            },
+            {
+                id: 3,
+                brand: 'Jordan',
+                name: 'Air Jordan 11 Retro',
+                price: 2199,
+                sizes: [39, 40, 41, 42, 43],
+                image: 'https://images.unsplash.com/photo-1539185441755-769473a23570?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fHNhcGF0b3xlbnwwfHwwfHx8MA%3D%3D',
+                description: 'Lendário modelo com patent leather. Elegância e performance em um.'
+            },
+            {
+                id: 4,
+                brand: 'Nike',
+                name: 'Air Force 1 Low',
+                price: 699,
+                sizes: [38, 39, 40, 41, 42, 43],
+                image: 'https://images.unsplash.com/photo-1595341888016-a392ef81b7de?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjJ8fHNhcGF0b3xlbnwwfHwwfHx8MA%3D%3D',
+                description: 'Clássico atemporal. O bassiço que nunca sai de moda.'
+            },
+            {
+                id: 5,
+                brand: 'Adidas',
+                name: 'Stan Smith',
+                price: 599,
+                sizes: [38, 39, 40, 41, 42, 43],
+                image: 'https://images.unsplash.com/photo-1579338559194-a162d19bf842?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzV8fHNhcGF0b3xlbnwwfHwwfHx8MA%3D%3D',
+                description: 'Minimalista e versátil. Perfeito para qualquer ocasião.'
+            },
+            {
+                id: 6,
+                brand: 'Jordan',
+                name: 'Jordan Max Aura 2',
+                price: 999,
+                sizes: [38, 39, 40, 41, 42, 43],
+                image: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzF8fHNhcGF0b3xlbnwwfHwwfHx8MA%3D%3D',
+                description: 'Comfort e estilo em perfeita harmonia. Tecnologia MAX Air exclusiva.'
+            },
+            {
+                id: 7,
+                brand: 'Nike',
+                name: 'Air Max 90',
+                price: 1299,
+                sizes: [38, 39, 40, 41, 42, 43],
+                image: 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8fHxzbmVha2Vyc3x8fDB8fHx8fA%3D%3D',
+                description: 'Visível Air Unit. A revolução do comfort em um ícone.'
+            },
+            {
+                id: 8,
+                brand: 'Adidas',
+                name: 'Adidas ZX 500',
+                price: 799,
+                sizes: [38, 39, 40, 41, 42, 43],
+                image: 'https://images.unsplash.com/photo-1579338559194-a162d19bf842?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzV8fHNhcGF0b3xlbnwwfHwwfHx8MA%3D%3D',
+                description: 'Retro-futurista. Inspiração dos anos 80 com toques modernos.'
+            },
+            {
+                id: 9,
+                brand: 'Jordan',
+                name: 'Jordan 1 Low OG',
+                price: 799,
+                sizes: [38, 39, 40, 41, 42, 43],
+                image: 'https://images.unsplash.com/photo-1605348532760-6753d2c43329?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHNhcGF0b3xlbnwwfHwwfHx8MA%3D%3D',
+                description: 'Versão low da lenda. Elegância discreta e cheia de personalidade.'
+            },
+            {
+                id: 10,
+                brand: 'Nike',
+                name: 'Air Vapor Swift',
+                price: 1249,
+                sizes: [38, 39, 40, 41, 42, 43],
+                image: 'https://images.unsplash.com/photo-1543508282-6319a3e2621f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHNhcGF0b3xlbnwwfHwwfHx8MA%3D%3D',
+                description: 'Modelo inovador com acabamento premium e visual esportivo para o streetstyle moderno.'
+            }
+        ];
+
+        // STATE
+        let cart = [];
+        let filteredProducts = [...products];
+        let selectedSize = null;
+        let selectedProduct = null;
+
+        // DOM Elements
+        const productsGrid = document.getElementById('products-grid');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalClose = document.getElementById('modal-close');
+        const addToCartBtn = document.getElementById('add-to-cart-btn');
+        const cartCountElement = document.getElementById('cart-count');
+        const minPriceInput = document.getElementById('min-price');
+        const maxPriceInput = document.getElementById('max-price');
+        const minPriceDisplay = document.getElementById('min-price-display');
+        const maxPriceDisplay = document.getElementById('max-price-display');
+        const clearFiltersBtn = document.getElementById('clear-filters');
+        const brandFilters = document.querySelectorAll('.brand-filter');
+        const sizeFilters = document.querySelectorAll('.size-filter');
+        const menuToggle = document.getElementById('menu-toggle');
+        const searchToggle = document.getElementById('search-toggle');
+        const searchBar = document.getElementById('search-bar');
+        const searchInput = document.getElementById('search-input');
+        const cartToggle = document.getElementById('cart-toggle');
+
+        // Render Products
+        function renderProducts() {
+            productsGrid.innerHTML = '';
+            filteredProducts.forEach((product, index) => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.style.animationDelay = `${index * 0.1}s`;
+                productCard.innerHTML = `
+                    <div class="bg-white border border-gray-200 overflow-hidden rounded-none shadow-sm hover:shadow-lg transition-shadow duration-300">
+                        <div class="bg-gray-50 aspect-square flex items-center justify-center overflow-hidden relative">
+                            <img src="${product.image}" alt="${product.name}" class="product-image w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black opacity-0 hover:opacity-5 transition-opacity duration-300"></div>
+                        </div>
+                        <div class="p-6">
+                            <p class="brand-tag mb-3">${product.brand}</p>
+                            <h3 class="font-bold text-base mb-3 uppercase line-clamp-2 leading-tight">${product.name}</h3>
+                            <div class="flex items-center justify-between">
+                                <p class="font-bold text-lg">R$ ${product.price.toLocaleString('pt-BR')}</p>
+                                <span class="text-xs text-gray-500 font-semibold">COMPRAR</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                productCard.addEventListener('click', () => openModal(product));
+                productsGrid.appendChild(productCard);
+            });
+        }
+
+        // Modal Functions
+        function openModal(product) {
+            selectedProduct = product;
+            selectedSize = null;
+
+            document.getElementById('modal-product-brand').textContent = product.brand;
+            document.getElementById('modal-product-name').textContent = product.name;
+            document.getElementById('modal-product-description').textContent = product.description;
+            document.getElementById('modal-product-price').textContent = product.price.toLocaleString('pt-BR');
+            document.getElementById('modal-product-image').src = product.image;
+
+            // Render sizes
+            const sizesContainer = document.getElementById('modal-sizes');
+            sizesContainer.innerHTML = '';
+            product.sizes.forEach(size => {
+                const sizeBtn = document.createElement('button');
+                sizeBtn.className = 'size-btn py-2 px-3 font-bold text-sm';
+                sizeBtn.textContent = size;
+                sizeBtn.addEventListener('click', () => selectSize(size, sizeBtn));
+                sizesContainer.appendChild(sizeBtn);
+            });
+
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            selectedSize = null;
+        }
+
+        function selectSize(size, element) {
+            document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            selectedSize = size;
+        }
+
+        // Filter Functions
+        function applyFilters() {
+            const selectedBrands = Array.from(brandFilters)
+                .filter(f => f.checked)
+                .map(f => f.value.toLowerCase());
+            const selectedSizes = Array.from(sizeFilters)
+                .filter(f => f.checked)
+                .map(f => parseInt(f.value));
+            const minPrice = parseInt(minPriceInput.value);
+            const maxPrice = parseInt(maxPriceInput.value);
+            const searchTerm = searchInput.value.toLowerCase();
+
+            filteredProducts = products.filter(product => {
+                const brandMatch = selectedBrands.length === 0 || selectedBrands.includes(product.brand.toLowerCase());
+                const sizeMatch = selectedSizes.length === 0 || selectedSizes.some(size => product.sizes.includes(size));
+                const priceMatch = product.price >= minPrice && product.price <= maxPrice;
+                const searchMatch = product.name.toLowerCase().includes(searchTerm) || product.brand.toLowerCase().includes(searchTerm);
+
+                return brandMatch && sizeMatch && priceMatch && searchMatch;
+            });
+
+            renderProducts();
+        }
+
+        function clearFilters() {
+            brandFilters.forEach(f => f.checked = false);
+            sizeFilters.forEach(f => f.checked = false);
+            minPriceInput.value = 0;
+            maxPriceInput.value = 5000;
+            minPriceDisplay.textContent = '0';
+            maxPriceDisplay.textContent = '5000';
+            searchInput.value = '';
+            filteredProducts = [...products];
+            renderProducts();
+        }
+
+        // Cart Functions
+        function addToCart() {
+            if (!selectedSize) {
+                alert('Por favor, selecione um tamanho');
+                return;
+            }
+
+            cart.push({
+                ...selectedProduct,
+                selectedSize: selectedSize,
+                cartId: Date.now()
+            });
+
+            cartCountElement.textContent = cart.length;
+            closeModal();
+            alert('Adicionado ao carrinho!');
+        }
+
+        // Event Listeners
+        modalClose.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        addToCartBtn.addEventListener('click', addToCart);
+
+        clearFiltersBtn.addEventListener('click', clearFilters);
+
+        brandFilters.forEach(filter => {
+            filter.addEventListener('change', applyFilters);
+        });
+
+        sizeFilters.forEach(filter => {
+            filter.addEventListener('change', applyFilters);
+        });
+
+        minPriceInput.addEventListener('input', () => {
+            minPriceDisplay.textContent = minPriceInput.value;
+            applyFilters();
+        });
+
+        maxPriceInput.addEventListener('input', () => {
+            maxPriceDisplay.textContent = maxPriceInput.value;
+            applyFilters();
+        });
+
+        searchInput.addEventListener('input', applyFilters);
+
+        searchToggle.addEventListener('click', () => {
+            searchBar.classList.toggle('hidden');
+            if (!searchBar.classList.contains('hidden')) {
+                searchInput.focus();
+            }
+        });
+
+        menuToggle.addEventListener('click', () => {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hidden');
+        });
+
+        // Cart Functions
+        const cartDrawer = document.getElementById('cart-drawer');
+        const cartOverlay = document.getElementById('cart-overlay');
+        const cartClose = document.getElementById('cart-close');
+        const cartItemsContainer = document.getElementById('cart-items');
+        const emptyCart = document.getElementById('empty-cart');
+        const cartCheckoutBtn = document.getElementById('checkout-btn');
+        const continueShoppingBtn = document.getElementById('continue-shopping');
+
+        function toggleCart() {
+            cartDrawer.classList.toggle('translate-x-full');
+            cartOverlay.classList.toggle('hidden');
+            if (!cartDrawer.classList.contains('translate-x-full')) {
+                renderCartItems();
+            }
+        }
+
+        function renderCartItems() {
+            cartItemsContainer.innerHTML = '';
+            
+            if (cart.length === 0) {
+                cartItemsContainer.appendChild(emptyCart);
+                updateCartTotals();
+                return;
+            }
+
+            cart.forEach((item, index) => {
+                const cartItem = document.createElement('div');
+                cartItem.className = 'border border-gray-200 p-4 rounded-none hover:shadow-md transition';
+                cartItem.innerHTML = `
+                    <div class="flex gap-4">
+                        <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover bg-gray-50">
+                        <div class="flex-1">
+                            <p class="text-xs text-gray-600 font-semibold uppercase">${item.brand}</p>
+                            <p class="font-bold text-sm mb-1">${item.name}</p>
+                            <p class="text-sm text-gray-600 mb-2">Tamanho: <span class="font-bold">${item.selectedSize}</span></p>
+                            <p class="font-bold">R$ ${item.price.toLocaleString('pt-BR')}</p>
+                        </div>
+                        <button class="remove-cart-btn text-gray-400 hover:text-red-500 transition" data-index="${index}">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+                cartItemsContainer.appendChild(cartItem);
+            });
+
+            // Add remove listeners
+            document.querySelectorAll('.remove-cart-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.currentTarget.dataset.index);
+                    removeFromCart(index);
+                });
+            });
+
+            updateCartTotals();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            cartCountElement.textContent = cart.length;
+            renderCartItems();
+        }
+
+        function updateCartTotals() {
+            const subtotal = cart.reduce((total, item) => total + item.price, 0);
+            document.getElementById('cart-subtotal').textContent = subtotal.toLocaleString('pt-BR');
+            document.getElementById('cart-total').textContent = subtotal.toLocaleString('pt-BR');
+        }
+
+        // Cart Event Listeners
+        cartToggle.addEventListener('click', toggleCart);
+        cartClose.addEventListener('click', toggleCart);
+        cartOverlay.addEventListener('click', toggleCart);
+        continueShoppingBtn.addEventListener('click', toggleCart);
+
+        cartCheckoutBtn.addEventListener('click', () => {
+            if (cart.length === 0) {
+                alert('Adicione itens ao carrinho primeiro!');
+                return;
+            }
+            alert(`Compra finalizada! Total: R$ ${cart.reduce((total, item) => total + item.price, 0).toLocaleString('pt-BR')}`);
+            cart = [];
+            cartCountElement.textContent = '0';
+            renderCartItems();
+            toggleCart();
+        });
+
+        // Close modal with ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                if (!cartDrawer.classList.contains('translate-x-full')) {
+                    toggleCart();
+                }
+            }
+        });
+
+        // Initial render
+        renderProducts();
+    </script>
+
+</body>
+</html>
